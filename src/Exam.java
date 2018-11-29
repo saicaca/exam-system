@@ -1,8 +1,11 @@
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -25,6 +28,7 @@ public class Exam extends Application {
 
     @Override
     public void start(Stage stage) {
+        // 读取试题
         try {
             File file = new File("test.txt");
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -34,6 +38,7 @@ public class Exam extends Application {
             time = Integer.parseInt(info[1]);
 
             String quesStr;
+            int number = 0;
             while ((quesStr = reader.readLine()) != null)
                 questions.add(new Question(quesStr));
             Collections.shuffle(questions);
@@ -42,10 +47,12 @@ public class Exam extends Application {
             System.out.println(ex.getMessage());
         }
 
+        // 显示考试基本信息
         Label lbTitle = new Label(title);
         lbTitle.setFont(Font.font(20));
         lbTitle.setAlignment(Pos.CENTER);
 
+        // 创建题目选择按钮
         FlowPane buttonPane = new FlowPane();
         buttonPane.setMinWidth(5 * QuesBt.size);
         buttonPane.setMaxWidth(5 * QuesBt.size);
@@ -58,6 +65,7 @@ public class Exam extends Application {
 
         quesPane = new QuesPane(questions.get(0));
 
+        // 布局排版
         VBox leftBox = new VBox();
         leftBox.getChildren().addAll(lbTitle, buttonPane);
 
@@ -71,20 +79,31 @@ public class Exam extends Application {
         stage.show();
     }
 
+    // 试题面板
     class QuesPane extends VBox {
         QuesPane(Question question) {
             setPadding(new Insets(20,20,20,20));
             Label lbQuestion = new Label(question.getQues());
             lbQuestion.setFont(Font.font(20));
             getChildren().add(lbQuestion);
+
             ArrayList<String> selectionList = question.getSelection();
-            for (String str :
-                    selectionList) {
-                getChildren().add(new Label(str));
+            for (int i = 0; i < selectionList.size(); i++) {
+                final int pos = i;
+                CheckBox cb = new CheckBox(selectionList.get(pos));
+                cb.setSelected(question.getAnswer()[pos]);    // 恢复选择状态
+                cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                        question.getAnswer()[pos] = newValue;
+                    }
+                });
+                getChildren().add(cb);
             }
         }
     }
 
+    // 题目选择按钮
     class QuesBt extends Button {
         final static int size = 50;
         Question question;

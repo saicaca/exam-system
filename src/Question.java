@@ -1,18 +1,21 @@
-import javafx.scene.control.Button;
 import java.util.ArrayList;
 
 public class Question {
     private String ques;
     private ArrayList<String> selection = new ArrayList<>();
-    private ArrayList<Integer> key = new ArrayList<>();
-    private ArrayList<Integer> answer = new ArrayList<>();
+    private boolean[] key;
+    private boolean[] answer;
 
     Question(String str) {
         String[] list = str.split("#");
-        ques = list[0];
+        ques = list[0]; // 问题文本
+        key = new boolean[list.length-1];
+        answer = new boolean[list.length-1];
+
+        // 添加选项
         for (int i = 1; i < list.length; i++) {
             if (list[i].charAt(0) == '^') {
-                key.add(i-1);
+                key[i-1] = true;
                 selection.add(list[i].substring(1));
             }
             else selection.add(list[i]);
@@ -27,11 +30,11 @@ public class Question {
         return selection;
     }
 
-    public ArrayList<Integer> getKey() {
+    public boolean[] getKey() {
         return key;
     }
 
-    public ArrayList<Integer> getAnswer() {
+    public boolean[] getAnswer() {
         return answer;
     }
 }
