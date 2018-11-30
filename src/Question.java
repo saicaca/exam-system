@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Question {
     private String ques;
@@ -48,5 +49,9 @@ public class Question {
             return true;
         else
             return false;
+    }
+
+    public boolean isCorrect() {
+        return Arrays.equals(key, answer);
     }
 }

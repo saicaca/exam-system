@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -24,6 +25,10 @@ public class Exam extends Application {
     private boolean isFinished;
     private QuesPane quesPane;
     private HBox hBox;
+    private BorderPane rightBox;
+
+    private ResultPane resultPane;
+    private int correct;
 
     @Override
     public void start(Stage stage) {
@@ -62,14 +67,23 @@ public class Exam extends Application {
             buttonPane.getChildren().add(button);
         }
 
+        // 提交按钮
+        Button btFinish = new Button("提交");
+        btFinish.setMinSize(100, 60);
+        btFinish.setOnAction(event -> finish());
+
         quesPane = new QuesPane(questions.get(0));
 
         // 布局排版
         VBox leftBox = new VBox();
         leftBox.getChildren().addAll(lbTitle, buttonPane);
 
+        rightBox = new BorderPane();
+        rightBox.setCenter(quesPane);
+        rightBox.setBottom(btFinish);
+
         hBox = new HBox();
-        hBox.getChildren().addAll(leftBox, quesPane);
+        hBox.getChildren().addAll(leftBox, rightBox);
 
         Scene scene = new Scene(hBox);
         scene.getStylesheets().add(getClass().getResource("skin.css").toExternalForm());   // 设定 css
@@ -80,10 +94,36 @@ public class Exam extends Application {
         stage.show();
     }
 
+
+    // 结束考试
+    private void finish() {
+        isFinished = true;
+
+        for (Question question: questions) {
+            if (question.isCorrect())
+                correct++;
+        }
+        resultPane = new ResultPane();
+        rightBox.setCenter(null);
+        rightBox.setCenter(resultPane);
+    }
+
+
+    class ResultPane extends VBox {
+        ResultPane() {
+            setAlignment(Pos.CENTER);
+            Label lbEnd = new Label("考试结束");
+            Label lbCorrect = new Label("" + correct);
+            getChildren().addAll(lbEnd, lbCorrect);
+        }
+    }
+
+
     // 试题面板
     class QuesPane extends VBox {
         QuesPane(Question question) {
             setPadding(new Insets(20,20,20,20));
+            setMinSize(400, 400);
 
             // 显示题目文本
             Label lbQuestion = new Label(question.getQues());
@@ -134,6 +174,7 @@ public class Exam extends Application {
         }
     }
 
+
     // 题目选择按钮
     class qtButton extends Button {
         final static int size = 50;
@@ -143,9 +184,8 @@ public class Exam extends Application {
             setMinSize(size,size);
             question = questions.get(num);
             setOnAction(event -> {
-                hBox.getChildren().remove(quesPane);
                 quesPane = new QuesPane(question);
-                hBox.getChildren().add(quesPane);
+                rightBox.setCenter(quesPane);
             });
             setTextFill(Color.WHITE);
             setId("qtBt");
