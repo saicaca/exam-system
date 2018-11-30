@@ -4,12 +4,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.io.BufferedReader;
@@ -54,12 +53,12 @@ public class Exam extends Application {
 
         // 创建题目选择按钮
         FlowPane buttonPane = new FlowPane();
-        buttonPane.setMinWidth(5 * QuesBt.size);
-        buttonPane.setMaxWidth(5 * QuesBt.size);
+        buttonPane.setMinWidth(5 * qtButton.size);
+        buttonPane.setMaxWidth(5 * qtButton.size);
 
-        QuesBt[] btList = new QuesBt[questions.size()];
+        qtButton[] btList = new qtButton[questions.size()];
         for (int i = 0; i < questions.size(); i++) {
-            QuesBt button = new QuesBt(i);
+            qtButton button = new qtButton(i);
             buttonPane.getChildren().add(button);
         }
 
@@ -73,6 +72,8 @@ public class Exam extends Application {
         hBox.getChildren().addAll(leftBox, quesPane);
 
         Scene scene = new Scene(hBox);
+        scene.getStylesheets().add(getClass().getResource("skin.css").toExternalForm());   // 设定 css
+
         stage.setScene(scene);
         stage.setMinWidth(800);
         stage.setMinHeight(600);
@@ -83,31 +84,61 @@ public class Exam extends Application {
     class QuesPane extends VBox {
         QuesPane(Question question) {
             setPadding(new Insets(20,20,20,20));
+
+            // 显示题目文本
             Label lbQuestion = new Label(question.getQues());
             lbQuestion.setFont(Font.font(20));
             getChildren().add(lbQuestion);
 
+            // 创建选项
             ArrayList<String> selectionList = question.getSelection();
-            for (int i = 0; i < selectionList.size(); i++) {
-                final int pos = i;
-                CheckBox cb = new CheckBox(selectionList.get(pos));
-                cb.setSelected(question.getAnswer()[pos]);    // 恢复选择状态
-                cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                        question.getAnswer()[pos] = newValue;
-                    }
-                });
-                getChildren().add(cb);
+            if (question.isMultiple()) {
+                // 是多选题
+                for (int i = 0; i < selectionList.size(); i++) {
+                    final int pos = i;
+                    CheckBox cb = new CheckBox(selectionList.get(pos));
+                    cb.setFont(Font.font(20));
+                    cb.setMinHeight(40);
+                    cb.setSelected(question.getAnswer()[pos]);    // 恢复选择状态
+                    cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                            question.getAnswer()[pos] = newValue;
+                        }
+                    });
+                    getChildren().add(cb);
+                }
             }
+            else {
+                // 是单选题
+                ToggleGroup tg = new ToggleGroup();
+                for (int i = 0; i < selectionList.size(); i++) {
+                    final int pos = i;
+                    RadioButton rb = new RadioButton(selectionList.get(i));
+                    rb.setToggleGroup(tg);
+                    rb.setFont(Font.font(20));
+                    rb.setMinHeight(40);
+                    rb.setSelected(question.getAnswer()[i]);
+                    rb.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                            for (int j = 0; j < question.getAnswer().length; j++)
+                                question.getAnswer()[j] = false;
+                            question.getAnswer()[pos] = newValue;
+                        }
+                    });
+                    getChildren().add(rb);
+                }
+            }
+
         }
     }
 
     // 题目选择按钮
-    class QuesBt extends Button {
+    class qtButton extends Button {
         final static int size = 50;
         Question question;
-        QuesBt(int num) {
+        qtButton(int num) {
             setText(""+(num+1));
             setMinSize(size,size);
             question = questions.get(num);
@@ -116,6 +147,8 @@ public class Exam extends Application {
                 quesPane = new QuesPane(question);
                 hBox.getChildren().add(quesPane);
             });
+            setTextFill(Color.WHITE);
+            setId("qtBt");
         }
     }
 }

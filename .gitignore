@@ -21,6 +21,7 @@
 
 # Misc #
 .idea/
+out/
 *.iml
 *.txt
 

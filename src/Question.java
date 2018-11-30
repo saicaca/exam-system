@@ -37,4 +37,16 @@ public class Question {
     public boolean[] getAnswer() {
         return answer;
     }
+
+    public boolean isMultiple() {
+        int count = 0;
+        for (boolean bl : key) {
+            if (bl)
+                count++;
+        }
+        if (count > 1)
+            return true;
+        else
+            return false;
+    }
 }

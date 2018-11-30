@@ -1,0 +1,10 @@
+#qtBt {
+    -fx-background-color: #3c4043;
+    -fx-background-radius: 0;
+}
+#qtBt:hover {
+    -fx-background-color: #4f5356;
+}
+#qtBt:pressed {
+    -fx-background-color: #606467;
+}
