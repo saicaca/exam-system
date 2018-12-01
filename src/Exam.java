@@ -26,6 +26,7 @@ public class Exam extends Application {
     private QuesPane quesPane;
     private HBox hBox;
     private BorderPane rightBox;
+    private Scene scene;
 
     private ResultPane resultPane;
     private int correct;
@@ -85,8 +86,10 @@ public class Exam extends Application {
         hBox = new HBox();
         hBox.getChildren().addAll(leftBox, rightBox);
 
-        Scene scene = new Scene(hBox);
+        scene = new Scene(hBox);
         scene.getStylesheets().add(getClass().getResource("skin.css").toExternalForm());   // 设定 css
+
+        rightBox.minWidthProperty().bind(scene.widthProperty().subtract(leftBox.widthProperty()));
 
         stage.setScene(scene);
         stage.setMinWidth(800);
@@ -98,6 +101,7 @@ public class Exam extends Application {
     // 结束考试
     private void finish() {
         isFinished = true;
+        correct = 0;
 
         for (Question question: questions) {
             if (question.isCorrect())
@@ -132,45 +136,56 @@ public class Exam extends Application {
 
             // 创建选项
             ArrayList<String> selectionList = question.getSelection();
-            if (question.isMultiple()) {
-                // 是多选题
+
+            if (isFinished) {
                 for (int i = 0; i < selectionList.size(); i++) {
-                    final int pos = i;
-                    CheckBox cb = new CheckBox(selectionList.get(pos));
-                    cb.setFont(Font.font(20));
-                    cb.setMinHeight(40);
-                    cb.setSelected(question.getAnswer()[pos]);    // 恢复选择状态
-                    cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                        @Override
-                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                            question.getAnswer()[pos] = newValue;
-                        }
-                    });
-                    getChildren().add(cb);
+                    Label lb = new Label(selectionList.get(i));
+                    lb.setFont(Font.font(20));
+                    lb.minHeight(40);
+                    getChildren().add(lb);
                 }
             }
             else {
-                // 是单选题
-                ToggleGroup tg = new ToggleGroup();
-                for (int i = 0; i < selectionList.size(); i++) {
-                    final int pos = i;
-                    RadioButton rb = new RadioButton(selectionList.get(i));
-                    rb.setToggleGroup(tg);
-                    rb.setFont(Font.font(20));
-                    rb.setMinHeight(40);
-                    rb.setSelected(question.getAnswer()[i]);
-                    rb.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                        @Override
-                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                            for (int j = 0; j < question.getAnswer().length; j++)
-                                question.getAnswer()[j] = false;
-                            question.getAnswer()[pos] = newValue;
-                        }
-                    });
-                    getChildren().add(rb);
+                if (question.isMultiple()) {
+                    // 是多选题
+                    for (int i = 0; i < selectionList.size(); i++) {
+                        final int pos = i;
+                        CheckBox cb = new CheckBox(selectionList.get(pos));
+                        cb.setFont(Font.font(20));
+                        cb.setMinHeight(40);
+                        cb.setSelected(question.getAnswer()[pos]);    // 恢复选择状态
+                        cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                                question.getAnswer()[pos] = newValue;
+                            }
+                        });
+                        getChildren().add(cb);
+                    }
                 }
-            }
+                else {
+                    // 是单选题
+                    ToggleGroup tg = new ToggleGroup();
+                    for (int i = 0; i < selectionList.size(); i++) {
+                        final int pos = i;
+                        RadioButton rb = new RadioButton(selectionList.get(i));
+                        rb.setToggleGroup(tg);
+                        rb.setFont(Font.font(20));
+                        rb.setMinHeight(40);
+                        rb.setSelected(question.getAnswer()[i]);
+                        rb.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                                for (int j = 0; j < question.getAnswer().length; j++)
+                                    question.getAnswer()[j] = false;
+                                question.getAnswer()[pos] = newValue;
+                            }
+                        });
+                        getChildren().add(rb);
+                    }
+                }
 
+            }
         }
     }
 
@@ -179,6 +194,7 @@ public class Exam extends Application {
     class qtButton extends Button {
         final static int size = 50;
         Question question;
+
         qtButton(int num) {
             setText(""+(num+1));
             setMinSize(size,size);
@@ -190,5 +206,7 @@ public class Exam extends Application {
             setTextFill(Color.WHITE);
             setId("qtBt");
         }
+
+
     }
 }
