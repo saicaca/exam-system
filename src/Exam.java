@@ -110,9 +110,9 @@ public class Exam extends Application {
                 correct++;
         }
         resultPane = new ResultPane();
-        rightBox.setCenter(null);
         rightBox.setCenter(resultPane);
 
+        //
         for (qtButton bt: btList) {
             bt.refresh();
         }
