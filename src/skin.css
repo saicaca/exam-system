@@ -8,3 +8,33 @@
 #qtBt:pressed {
     -fx-background-color: #606467;
 }
+#qtBt-answered {
+    -fx-background-color: #1565c0;
+    -fx-background-radius: 0;
+}
+#qtBt-answered:hover {
+    -fx-background-color: #1976d2;
+}
+#qtBt-answered:pressed {
+    -fx-background-color: #1e88e5;
+}
+#qtBt-correct {
+    -fx-background-color: #4fc3f7;
+    -fx-background-radius: 0;
+}
+#qtBt-correct:hover {
+    -fx-background-color: #81d4fa;
+}
+#qtBt-correct:pressed {
+    -fx-background-color: #b3e5fc;
+}
+#qtBt-wrong {
+    -fx-background-color: #ec407a;
+    -fx-background-radius: 0;
+}
+#qtBt-wrong:hover {
+    -fx-background-color: #f06292;
+}
+#qtBt-wrong:pressed {
+    -fx-background-color: #f48fb1;
+}

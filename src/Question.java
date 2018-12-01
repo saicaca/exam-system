@@ -54,4 +54,8 @@ public class Question {
     public boolean isCorrect() {
         return Arrays.equals(key, answer);
     }
+
+    public boolean isEmpty() {
+        return Arrays.equals(answer, new boolean[selection.size()]);
+    }
 }

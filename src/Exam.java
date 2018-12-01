@@ -27,6 +27,7 @@ public class Exam extends Application {
     private HBox hBox;
     private BorderPane rightBox;
     private Scene scene;
+    private qtButton[] btList;
 
     private ResultPane resultPane;
     private int correct;
@@ -62,9 +63,10 @@ public class Exam extends Application {
         buttonPane.setMinWidth(5 * qtButton.size);
         buttonPane.setMaxWidth(5 * qtButton.size);
 
-        qtButton[] btList = new qtButton[questions.size()];
+        btList = new qtButton[questions.size()];
         for (int i = 0; i < questions.size(); i++) {
             qtButton button = new qtButton(i);
+            btList[i] = button;
             buttonPane.getChildren().add(button);
         }
 
@@ -110,6 +112,10 @@ public class Exam extends Application {
         resultPane = new ResultPane();
         rightBox.setCenter(null);
         rightBox.setCenter(resultPane);
+
+        for (qtButton bt: btList) {
+            bt.refresh();
+        }
     }
 
 
@@ -126,6 +132,7 @@ public class Exam extends Application {
     // 试题面板
     class QuesPane extends VBox {
         QuesPane(Question question) {
+
             setPadding(new Insets(20,20,20,20));
             setMinSize(400, 400);
 
@@ -158,6 +165,7 @@ public class Exam extends Application {
                             @Override
                             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                                 question.getAnswer()[pos] = newValue;
+                                btList[questions.indexOf(question)].refresh();
                             }
                         });
                         getChildren().add(cb);
@@ -177,14 +185,14 @@ public class Exam extends Application {
                             @Override
                             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                                 for (int j = 0; j < question.getAnswer().length; j++)
-                                    question.getAnswer()[j] = false;
+                                    question.getAnswer()[j] = false;    // 把其他选项设为 false
                                 question.getAnswer()[pos] = newValue;
+                                btList[questions.indexOf(question)].refresh();
                             }
                         });
                         getChildren().add(rb);
                     }
                 }
-
             }
         }
     }
@@ -203,10 +211,20 @@ public class Exam extends Application {
                 quesPane = new QuesPane(question);
                 rightBox.setCenter(quesPane);
             });
+            setFont(Font.font(16));
             setTextFill(Color.WHITE);
             setId("qtBt");
         }
 
-
+        public void refresh() {
+            if (isFinished && question.isCorrect())
+                setId("qtBt-correct");
+            else if (isFinished && !question.isCorrect())
+                setId("qtBt-wrong");
+            else if (!isFinished && !question.isEmpty())
+                setId("qtBt-answered");
+            else
+                setId("qtBt");
+        }
     }
 }
