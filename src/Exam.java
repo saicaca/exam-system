@@ -1,26 +1,28 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Exam {
+    private long time;
+
     private String title;
-    private int time;
     private ArrayList<Question> questions = new ArrayList<>();
     private boolean isFinished;
     private QuesPane quesPane;
@@ -40,7 +42,7 @@ public class Exam {
 
             String[] info = reader.readLine().split("#");
             title = info[0];
-            time = Integer.parseInt(info[1]);
+            time = 1000 * 60 * Integer.parseInt(info[1]);
 
             String quesStr;
             int number = 0;
@@ -52,10 +54,21 @@ public class Exam {
             System.out.println(ex.getMessage());
         }
 
+        // 设定计时
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() ->
+                    finish()
+                );
+            }
+        }, time);
+
+
         // 显示考试基本信息
         Label lbTitle = new Label(title);
-        lbTitle.setFont(Font.font(20));
-        lbTitle.setAlignment(Pos.CENTER);
+        lbTitle.setFont(Font.font("微软雅黑", FontWeight.BOLD, 30));
 
         // 创建题目选择按钮
         FlowPane buttonPane = new FlowPane();
@@ -77,7 +90,8 @@ public class Exam {
         quesPane = new QuesPane(questions.get(0));
 
         // 布局排版
-        VBox leftBox = new VBox();
+        VBox leftBox = new VBox(20);
+        leftBox.setAlignment(Pos.TOP_CENTER);
         leftBox.getChildren().addAll(lbTitle, buttonPane);
 
         rightBox = new BorderPane();
