@@ -19,7 +19,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Exam {
-    private long totalMs;
     private int currentSecond;
 
     private String title;
@@ -30,6 +29,7 @@ public class Exam {
     private BorderPane rightBox;
     private Scene scene;
     private qtButton[] btList;
+    private Button btFinish;
 
     private ResultPane resultPane;
     private int correct;
@@ -38,13 +38,15 @@ public class Exam {
 
 
     public void start(File file) {
+        int totalSecond = 0;
+
         // 读取试题
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String[] info = reader.readLine().split("#");
             title = info[0];
-            totalMs = 1000 * 60 * Integer.parseInt(info[1]);
+            totalSecond = 60 * Integer.parseInt(info[1]);
 
             String quesStr;
             int number = 0;
@@ -56,22 +58,11 @@ public class Exam {
             System.out.println(ex.getMessage());
         }
 
-        // 设定计时
-        Timer endTimer = new Timer();
-        endTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() ->
-                    finish()
-                );
-            }
-        }, totalMs);
 
-        // 显示倒计时
+        // 倒计时
         Label lbTimer = new Label();
         lbTimer.setFont(Font.font("Arial", FontWeight.BOLD, 30));
 
-        final int totalSecond = (int)(totalMs / 1000);
         currentSecond = totalSecond;
 
         timeDisplayTask = new TimerTask() {
@@ -79,10 +70,10 @@ public class Exam {
             public void run() {
                 currentSecond--;
                 Platform.runLater(() -> {
+                    if (currentSecond == 0)
+                        finish();
                     lbTimer.setText(String.format("%02d:", currentSecond / 60) + String.format("%02d", currentSecond % 60));
                 });
-                if (currentSecond == 0)
-                    cancel();
             }
         };
         Timer displayTimer = new Timer();
@@ -107,9 +98,35 @@ public class Exam {
         }
 
         // 提交按钮
-        Button btFinish = new Button("提交");
+        btFinish = new Button("提交");
         btFinish.setMinSize(100, 60);
-        btFinish.setOnAction(event -> finish());
+        btFinish.setOnAction(event -> {
+            Stage finStage = new Stage();
+
+            Label lbFinish = new Label("确定要交卷吗？");
+            lbFinish.setFont(Font.font(16));
+            if (!isComplete())
+                lbFinish.setText("还有题目未完成，确定要交卷吗？");
+            Button btOk = new Button("确定");
+            Button btCancel = new Button("取消");
+            btOk.setOnAction(event1 -> {
+                finish();
+                finStage.close();
+            });
+            btCancel.setOnAction(event1 -> {
+                finStage.close();
+            });
+            HBox finBtBox = new HBox(10);
+            finBtBox.setAlignment(Pos.CENTER);
+            finBtBox.getChildren().addAll(btOk, btCancel);
+            VBox finBox = new VBox(10);
+            finBox.setPadding(new Insets(20,20,20,20));
+            finBox.setAlignment(Pos.CENTER);
+            finBox.getChildren().addAll(lbFinish, finBtBox);
+            Scene finScene = new Scene(finBox);
+            finStage.setScene(finScene);
+            finStage.show();
+        });
 
         quesPane = new QuesPane(questions.get(0));
 
@@ -157,9 +174,22 @@ public class Exam {
         for (qtButton bt: btList) {
             bt.refresh();
         }
+
+        btFinish.setText("查看成绩");
+        btFinish.setOnAction(event -> rightBox.setCenter(resultPane));
     }
 
 
+    private boolean isComplete() {
+        for (Question question: questions) {
+            if (question.isEmpty())
+                return false;
+        }
+        return true;
+    }
+
+
+    // 成绩面板
     class ResultPane extends VBox {
         ResultPane() {
             setAlignment(Pos.CENTER);
