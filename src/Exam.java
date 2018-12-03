@@ -1,4 +1,3 @@
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,7 +19,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Exam {
-    private long time;
+    private long totalMs;
+    private int currentSecond;
 
     private String title;
     private ArrayList<Question> questions = new ArrayList<>();
@@ -34,6 +34,8 @@ public class Exam {
     private ResultPane resultPane;
     private int correct;
 
+    private TimerTask timeDisplayTask;
+
 
     public void start(File file) {
         // 读取试题
@@ -42,7 +44,7 @@ public class Exam {
 
             String[] info = reader.readLine().split("#");
             title = info[0];
-            time = 1000 * 60 * Integer.parseInt(info[1]);
+            totalMs = 1000 * 60 * Integer.parseInt(info[1]);
 
             String quesStr;
             int number = 0;
@@ -55,15 +57,37 @@ public class Exam {
         }
 
         // 设定计时
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+        Timer endTimer = new Timer();
+        endTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() ->
                     finish()
                 );
             }
-        }, time);
+        }, totalMs);
+
+        // 显示倒计时
+        Label lbTimer = new Label();
+        lbTimer.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+
+        final int totalSecond = (int)(totalMs / 1000);
+        currentSecond = totalSecond;
+
+        timeDisplayTask = new TimerTask() {
+            @Override
+            public void run() {
+                currentSecond--;
+                Platform.runLater(() -> {
+                    lbTimer.setText(String.format("%02d:", currentSecond / 60) + String.format("%02d", currentSecond % 60));
+                });
+                if (currentSecond == 0)
+                    cancel();
+            }
+        };
+        Timer displayTimer = new Timer();
+        displayTimer.schedule(timeDisplayTask, 0, 1000);
+
 
 
         // 显示考试基本信息
@@ -92,7 +116,7 @@ public class Exam {
         // 布局排版
         VBox leftBox = new VBox(20);
         leftBox.setAlignment(Pos.TOP_CENTER);
-        leftBox.getChildren().addAll(lbTitle, buttonPane);
+        leftBox.getChildren().addAll(lbTitle, buttonPane, lbTimer);
 
         rightBox = new BorderPane();
         rightBox.setCenter(quesPane);
@@ -119,6 +143,8 @@ public class Exam {
     private void finish() {
         isFinished = true;
         correct = 0;
+
+        timeDisplayTask.cancel();
 
         for (Question question: questions) {
             if (question.isCorrect())
