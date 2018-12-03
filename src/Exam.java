@@ -18,7 +18,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Exam extends Application {
+public class Exam {
     private String title;
     private int time;
     private ArrayList<Question> questions = new ArrayList<>();
@@ -32,11 +32,10 @@ public class Exam extends Application {
     private ResultPane resultPane;
     private int correct;
 
-    @Override
-    public void start(Stage stage) {
+
+    public void start(File file) {
         // 读取试题
         try {
-            File file = new File("test.txt");
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String[] info = reader.readLine().split("#");
@@ -92,6 +91,8 @@ public class Exam extends Application {
         scene.getStylesheets().add(getClass().getResource("skin.css").toExternalForm());   // 设定 css
 
         rightBox.minWidthProperty().bind(scene.widthProperty().subtract(leftBox.widthProperty()));
+
+        Stage stage = new Stage();
 
         stage.setScene(scene);
         stage.setMinWidth(800);
