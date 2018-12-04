@@ -32,7 +32,7 @@ public class Exam {
     private Button btFinish;
 
     private ResultPane resultPane;
-    private int correct;
+    private int correctCount;
 
     private TimerTask timeDisplayTask;
 
@@ -49,7 +49,6 @@ public class Exam {
             totalSecond = 60 * Integer.parseInt(info[1]);
 
             String quesStr;
-            int number = 0;
             while ((quesStr = reader.readLine()) != null)
                 questions.add(new Question(quesStr));
             Collections.shuffle(questions);
@@ -100,6 +99,8 @@ public class Exam {
         // 提交按钮
         btFinish = new Button("提交");
         btFinish.setMinSize(100, 60);
+
+        // 提交前弹出确认窗口
         btFinish.setOnAction(event -> {
             Stage finStage = new Stage();
 
@@ -107,6 +108,7 @@ public class Exam {
             lbFinish.setFont(Font.font(16));
             if (!isComplete())
                 lbFinish.setText("还有题目未完成，确定要交卷吗？");
+
             Button btOk = new Button("确定");
             Button btCancel = new Button("取消");
             btOk.setOnAction(event1 -> {
@@ -116,6 +118,7 @@ public class Exam {
             btCancel.setOnAction(event1 -> {
                 finStage.close();
             });
+
             HBox finBtBox = new HBox(10);
             finBtBox.setAlignment(Pos.CENTER);
             finBtBox.getChildren().addAll(btOk, btCancel);
@@ -159,13 +162,13 @@ public class Exam {
     // 结束考试
     private void finish() {
         isFinished = true;
-        correct = 0;
+        correctCount = 0;
 
         timeDisplayTask.cancel();
 
         for (Question question: questions) {
             if (question.isCorrect())
-                correct++;
+                correctCount++;
         }
         resultPane = new ResultPane();
         rightBox.setCenter(resultPane);
@@ -194,7 +197,7 @@ public class Exam {
         ResultPane() {
             setAlignment(Pos.CENTER);
             Label lbEnd = new Label("考试结束");
-            Label lbCorrect = new Label("" + correct);
+            Label lbCorrect = new Label("" + correctCount);
             getChildren().addAll(lbEnd, lbCorrect);
         }
     }
