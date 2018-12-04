@@ -111,6 +111,9 @@ public class Exam {
 
             Button btOk = new Button("确定");
             Button btCancel = new Button("取消");
+            for (Button button: new Button[]{btOk, btCancel}) {
+                button.setMinSize(60, 30);
+            }
             btOk.setOnAction(event1 -> {
                 finish();
                 finStage.close();
@@ -206,6 +209,8 @@ public class Exam {
     // 试题面板
     class QuesPane extends VBox {
         QuesPane(Question question) {
+            boolean[] key = question.getKey();
+            boolean[] answer = question.getAnswer();
 
             setPadding(new Insets(20,20,20,20));
             setMinSize(400, 400);
@@ -220,9 +225,24 @@ public class Exam {
 
             if (isFinished) {
                 for (int i = 0; i < selectionList.size(); i++) {
-                    Label lb = new Label(selectionList.get(i));
+                    Label lb;
+                    if (answer[i] && key[i]) {
+                        lb  = new Label("✔ " + selectionList.get(i));
+                        lb.setTextFill(Color.GREEN);
+                    }
+                    else if (answer[i] && !key[i]) {
+                        lb  = new Label("✖ " + selectionList.get(i));
+                        lb.setTextFill(Color.RED);
+                    }
+                    else if (!answer[i] && key[i]) {
+                        lb  = new Label("✔ " + selectionList.get(i));
+                        lb.setTextFill(Color.BLUE);
+                    }
+                    else
+                        lb = new Label(selectionList.get(i));
                     lb.setFont(Font.font(20));
                     lb.minHeight(40);
+
                     getChildren().add(lb);
                 }
             }
