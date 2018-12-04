@@ -47,6 +47,7 @@ public class SetupInterface extends Application {
         }
 
         Button btStart = new Button("开始考试");
+        btStart.setMinSize(80,40);
         btStart.setOnAction(event -> {
             Exam exam = new Exam();
             exam.start(selectedFile);
@@ -71,10 +72,8 @@ public class SetupInterface extends Application {
             lbTime.setText("考试时间：" + info[1] + "分钟");
             String str;
             int numberOfQuestion = 0;
-            while ((str = reader.readLine()) != null) {
-                if (str.charAt(0) == '#')
-                    numberOfQuestion++;
-            }
+            while ((str = reader.readLine()) != null)
+                numberOfQuestion++;
             lbNum.setText("题目数量：" + numberOfQuestion);
         }
         catch (Exception ex) {
