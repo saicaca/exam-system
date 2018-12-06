@@ -107,9 +107,9 @@ public class Exam {
 
         // 提交按钮
         btFinish = new Button("提交");
-        btFinish.setTextFill(Color.WHITE);
         btFinish.setMinSize(100, 60);
-        btFinish.setId("qtBt-answered");
+        btFinish.setFont(Font.font(16));
+        btFinish.setId("button-blue");
 
         // 提交前弹出确认窗口
         btFinish.setOnAction(event -> {
@@ -318,12 +318,13 @@ public class Exam {
             // 创建上下切题按钮
             int index = questions.indexOf(question);
             Button[] btList = new Button[2];
-            HBox btBox = new HBox(20);
+            HBox btBox = new HBox(40);
             btBox.setAlignment(Pos.CENTER);
             if (index != 0) {
                 Button btPrev = new Button("上一题");
                 btBox.getChildren().add(btPrev);
                 btPrev.setMinSize(60, 40);
+                btPrev.setId("button-blue");
                 btPrev.setOnAction(event -> {
                     quesPane = new QuesPane(questions.get(index-1));
                     rightBox.setCenter(quesPane);
@@ -333,6 +334,7 @@ public class Exam {
                 Button btNext = new Button("下一题");
                 btBox.getChildren().add(btNext);
                 btNext.setMinSize(60, 40);
+                btNext.setId("button-blue");
                 btNext.setOnAction(event -> {
                     quesPane = new QuesPane(questions.get(index+1));
                     rightBox.setCenter(quesPane);
@@ -357,19 +359,18 @@ public class Exam {
                 rightBox.setCenter(quesPane);
             });
             setFont(Font.font(16));
-            setTextFill(Color.WHITE);
-            setId("qtBt");
+            setId("button");
         }
 
         public void refresh() {
             if (isFinished && question.isCorrect())
-                setId("qtBt-correct");
+                setId("button-blue");
             else if (isFinished && !question.isCorrect())
-                setId("qtBt-wrong");
+                setId("button-red");
             else if (!isFinished && !question.isEmpty())
-                setId("qtBt-answered");
+                setId("button-blue");
             else
-                setId("qtBt");
+                setId("button");
         }
     }
 }

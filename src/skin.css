@@ -1,46 +1,39 @@
-#qtBt {
+#button {
     -fx-background-color: #3c4043;
     -fx-background-radius: 0;
+    -fx-text-fill: #FFFFFF;
 }
-#qtBt:hover {
+#button:hover {
     -fx-background-color: #4f5356;
 }
-#qtBt:pressed {
+#button:pressed {
     -fx-background-color: #606467;
 }
-#qtBt:focused {
+#button:focused {
     -fx-background-color: #4f5356;
 }
-#qtBt-answered {
+#button-blue {
     -fx-background-color: #0288d1;
     -fx-background-radius: 0;
+    -fx-text-fill: #FFFFFF;
 }
-#qtBt-answered:hover {
+#button-blue:hover {
     -fx-background-color: #1976d2;
 }
-#qtBt-answered:pressed {
+#button-blue:pressed {
     -fx-background-color: #1e88e5;
 }
-#qtBt-correct {
-    -fx-background-color: #1565c0;
-    -fx-background-radius: 0;
-}
-#qtBt-correct:hover {
-    -fx-background-color: #1976d2;
-}
-#qtBt-correct:pressed {
-    -fx-background-color: #1e88e5;
-}
-#qtBt-wrong {
+#button-red {
     -fx-background-color: #ec407a;
     -fx-background-radius: 0;
+    -fx-text-fill: #FFFFFF;
 }
-#qtBt-wrong:hover {
+#button-red:hover {
     -fx-background-color: #f06292;
 }
-#qtBt-wrong:pressed {
+#button-red:pressed {
     -fx-background-color: #f48fb1;
 }
-#qtBt:armed, #qtBt:focused, #qtBt-answered:armed, #qtBt-answered:focused, #qtBt-correct:armed, #qtBt-correct:focused, #qtBt-wrong:armed, #qtBt-wrong:focused {
+#button:armed, #button:focused, #button-blue:armed, #button-blue:focused, #qtBt-correct:armed, #qtBt-correct:focused, #button-red:armed, #button-red:focused {
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
 }
