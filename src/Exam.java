@@ -61,6 +61,7 @@ public class Exam {
         // 倒计时
         Label lbTimer = new Label();
         lbTimer.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+        lbTimer.setTextFill(Color.WHITE);
 
         currentSecond = totalSecond;
 
@@ -106,7 +107,9 @@ public class Exam {
 
         // 提交按钮
         btFinish = new Button("提交");
+        btFinish.setTextFill(Color.WHITE);
         btFinish.setMinSize(100, 60);
+        btFinish.setId("qtBt-answered");
 
         // 提交前弹出确认窗口
         btFinish.setOnAction(event -> {
@@ -142,6 +145,11 @@ public class Exam {
             finStage.show();
         });
 
+        // 右底栏
+        BorderPane rightBottomBar = new BorderPane();
+        rightBottomBar.setStyle("-fx-background-color: #E0E0E0");
+        rightBottomBar.setRight(btFinish);
+
         quesPane = new QuesPane(questions.get(0));
 
         // 布局排版
@@ -152,7 +160,7 @@ public class Exam {
 
         rightBox = new BorderPane();
         rightBox.setCenter(quesPane);
-        rightBox.setBottom(btFinish);
+        rightBox.setBottom(rightBottomBar);
 
         hBox = new HBox();
         hBox.getChildren().addAll(leftBox, rightBox);
