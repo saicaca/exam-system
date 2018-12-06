@@ -217,6 +217,7 @@ public class Exam {
 
     // 试题面板
     class QuesPane extends VBox {
+
         QuesPane(Question question) {
             boolean[] key = question.getKey();
             boolean[] answer = question.getAnswer();
@@ -228,13 +229,13 @@ public class Exam {
             Label lbQuestion = new Label(question.getQues());
             lbQuestion.setFont(Font.font("微软雅黑",FontWeight.BOLD,24));
             lbQuestion.setWrapText(true);
-            StackPane quesPane = new StackPane();
-            quesPane.setMinHeight(120);
-            quesPane.setAlignment(Pos.BOTTOM_LEFT);
-            quesPane.setPadding(new Insets(20,20,20,20));
-            quesPane.setStyle("-fx-background-color: #E0E0E0");
-            quesPane.getChildren().add(lbQuestion);
-            getChildren().add(quesPane);
+            StackPane titlePane = new StackPane();
+            titlePane.setMinHeight(120);
+            titlePane.setAlignment(Pos.BOTTOM_LEFT);
+            titlePane.setPadding(new Insets(20,20,20,20));
+            titlePane.setStyle("-fx-background-color: #E0E0E0");
+            titlePane.getChildren().add(lbQuestion);
+            getChildren().add(titlePane);
 
             // 创建选项
             VBox selectionPane = new VBox(20);
@@ -305,6 +306,31 @@ public class Exam {
                     }
                 }
             }
+
+            // 创建上下切题按钮
+            int index = questions.indexOf(question);
+            Button[] btList = new Button[2];
+            HBox btBox = new HBox(20);
+            btBox.setAlignment(Pos.CENTER);
+            if (index != 0) {
+                Button btPrev = new Button("上一题");
+                btBox.getChildren().add(btPrev);
+                btPrev.setMinSize(60, 40);
+                btPrev.setOnAction(event -> {
+                    quesPane = new QuesPane(questions.get(index-1));
+                    rightBox.setCenter(quesPane);
+                });
+            }
+            if (index != questions.size() - 1) {
+                Button btNext = new Button("下一题");
+                btBox.getChildren().add(btNext);
+                btNext.setMinSize(60, 40);
+                btNext.setOnAction(event -> {
+                    quesPane = new QuesPane(questions.get(index+1));
+                    rightBox.setCenter(quesPane);
+                });
+            }
+            selectionPane.getChildren().add(btBox);
         }
     }
 
