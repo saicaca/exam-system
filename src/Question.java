@@ -23,23 +23,23 @@ public class Question {
         }
     }
 
-    public String getQues() {
+    String getQues() {
         return ques;
     }
 
-    public ArrayList<String> getSelection() {
+    ArrayList<String> getSelection() {
         return selection;
     }
 
-    public boolean[] getKey() {
+    boolean[] getKey() {
         return key;
     }
 
-    public boolean[] getAnswer() {
+    boolean[] getAnswer() {
         return answer;
     }
 
-    public boolean isMultiple() {
+    boolean isMultiple() {
         int count = 0;
         for (boolean bl : key) {
             if (bl)
@@ -51,11 +51,11 @@ public class Question {
             return false;
     }
 
-    public boolean isCorrect() {
+    boolean isCorrect() {
         return Arrays.equals(key, answer);
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
         return Arrays.equals(answer, new boolean[selection.size()]);
     }
 }

@@ -8,8 +8,11 @@
 #qtBt:pressed {
     -fx-background-color: #606467;
 }
+#qtBt:focused {
+    -fx-background-color: #4f5356;
+}
 #qtBt-answered {
-    -fx-background-color: #1565c0;
+    -fx-background-color: #0288d1;
     -fx-background-radius: 0;
 }
 #qtBt-answered:hover {
@@ -37,4 +40,7 @@
 }
 #qtBt-wrong:pressed {
     -fx-background-color: #f48fb1;
+}
+#qtBt:armed, #qtBt:focused, #qtBt-answered:armed, #qtBt-answered:focused, #qtBt-correct:armed, #qtBt-correct:focused, #qtBt-wrong:armed, #qtBt-wrong:focused {
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
 }

@@ -82,12 +82,20 @@ public class Exam {
 
         // 显示考试基本信息
         Label lbTitle = new Label(title);
-        lbTitle.setFont(Font.font("微软雅黑", FontWeight.BOLD, 30));
+        lbTitle.setTextFill(Color.WHITE);
+        lbTitle.setFont(Font.font("微软雅黑", FontWeight.BOLD, 24));
+        VBox infoBox = new VBox(4);
+        infoBox.setAlignment(Pos.CENTER);
+        infoBox.setMinHeight(120);
+        infoBox.getChildren().add(lbTitle);
+        infoBox.setStyle("-fx-background-color: #0288d1");
 
         // 创建题目选择按钮
         FlowPane buttonPane = new FlowPane();
-        buttonPane.setMinWidth(5 * qtButton.size);
-        buttonPane.setMaxWidth(5 * qtButton.size);
+        buttonPane.setMinWidth(5 * (qtButton.size+2));
+        buttonPane.setMaxWidth(5 * (qtButton.size+2));
+        buttonPane.setHgap(2);
+        buttonPane.setVgap(3);
 
         btList = new qtButton[questions.size()];
         for (int i = 0; i < questions.size(); i++) {
@@ -137,9 +145,10 @@ public class Exam {
         quesPane = new QuesPane(questions.get(0));
 
         // 布局排版
-        VBox leftBox = new VBox(20);
+        VBox leftBox = new VBox(10);
         leftBox.setAlignment(Pos.TOP_CENTER);
-        leftBox.getChildren().addAll(lbTitle, buttonPane, lbTimer);
+        leftBox.setStyle("-fx-background-color: #303030");
+        leftBox.getChildren().addAll(infoBox, buttonPane, lbTimer);
 
         rightBox = new BorderPane();
         rightBox.setCenter(quesPane);
@@ -212,38 +221,48 @@ public class Exam {
             boolean[] key = question.getKey();
             boolean[] answer = question.getAnswer();
 
-            setPadding(new Insets(20,20,20,20));
             setMinSize(400, 400);
+            setStyle("-fx-background-color: #F5F5F5");
 
             // 显示题目文本
             Label lbQuestion = new Label(question.getQues());
-            lbQuestion.setFont(Font.font(20));
-            getChildren().add(lbQuestion);
+            lbQuestion.setFont(Font.font("微软雅黑",FontWeight.BOLD,24));
+            lbQuestion.setWrapText(true);
+            StackPane quesPane = new StackPane();
+            quesPane.setMinHeight(120);
+            quesPane.setAlignment(Pos.BOTTOM_LEFT);
+            quesPane.setPadding(new Insets(20,20,20,20));
+            quesPane.setStyle("-fx-background-color: #E0E0E0");
+            quesPane.getChildren().add(lbQuestion);
+            getChildren().add(quesPane);
 
             // 创建选项
+            VBox selectionPane = new VBox(20);
+            getChildren().add(selectionPane);
+            selectionPane.setAlignment(Pos.TOP_LEFT);
+            selectionPane.setPadding(new Insets(20,20,20,20));
             ArrayList<String> selectionList = question.getSelection();
 
             if (isFinished) {
                 for (int i = 0; i < selectionList.size(); i++) {
                     Label lb;
                     if (answer[i] && key[i]) {
-                        lb  = new Label("✔ " + selectionList.get(i));
-                        lb.setTextFill(Color.GREEN);
+                        lb  = new Label(selectionList.get(i) + " ✔");
+                        lb.setTextFill(Color.valueOf("4caf50"));
                     }
                     else if (answer[i] && !key[i]) {
-                        lb  = new Label("✖ " + selectionList.get(i));
-                        lb.setTextFill(Color.RED);
+                        lb  = new Label(selectionList.get(i) + " ✖");
+                        lb.setTextFill(Color.valueOf("e91e63"));
                     }
                     else if (!answer[i] && key[i]) {
-                        lb  = new Label("✔ " + selectionList.get(i));
-                        lb.setTextFill(Color.BLUE);
+                        lb  = new Label(selectionList.get(i) + " ✔");
+                        lb.setTextFill(Color.valueOf("2196f3"));
                     }
                     else
                         lb = new Label(selectionList.get(i));
                     lb.setFont(Font.font(20));
-                    lb.minHeight(40);
 
-                    getChildren().add(lb);
+                    selectionPane.getChildren().add(lb);
                 }
             }
             else {
@@ -253,7 +272,6 @@ public class Exam {
                         final int pos = i;
                         CheckBox cb = new CheckBox(selectionList.get(pos));
                         cb.setFont(Font.font(20));
-                        cb.setMinHeight(40);
                         cb.setSelected(question.getAnswer()[pos]);    // 恢复选择状态
                         cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
                             @Override
@@ -262,7 +280,7 @@ public class Exam {
                                 btList[questions.indexOf(question)].refresh();
                             }
                         });
-                        getChildren().add(cb);
+                        selectionPane.getChildren().add(cb);
                     }
                 }
                 else {
@@ -273,7 +291,6 @@ public class Exam {
                         RadioButton rb = new RadioButton(selectionList.get(i));
                         rb.setToggleGroup(tg);
                         rb.setFont(Font.font(20));
-                        rb.setMinHeight(40);
                         rb.setSelected(question.getAnswer()[i]);
                         rb.selectedProperty().addListener(new ChangeListener<Boolean>() {
                             @Override
@@ -284,7 +301,7 @@ public class Exam {
                                 btList[questions.indexOf(question)].refresh();
                             }
                         });
-                        getChildren().add(rb);
+                        selectionPane.getChildren().add(rb);
                     }
                 }
             }
@@ -294,7 +311,7 @@ public class Exam {
 
     // 题目选择按钮
     class qtButton extends Button {
-        final static int size = 50;
+        final static int size = 48;
         Question question;
 
         qtButton(int num) {
