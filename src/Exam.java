@@ -25,9 +25,7 @@ public class Exam {
     private ArrayList<Question> questions = new ArrayList<>();
     private boolean isFinished;
     private QuesPane quesPane;
-    private HBox hBox;
     private BorderPane rightBox;
-    private Scene scene;
     private qtButton[] btList;
     private Button btFinish;
 
@@ -92,7 +90,6 @@ public class Exam {
         infoBox.setMinHeight(120);
         infoBox.getChildren().add(lbTitle);
         infoBox.setStyle("-fx-background-color: #3c4043");
-        // infoBox.setStyle("-fx-background-color: #0288d1");
 
         // 创建题目选择按钮
         FlowPane buttonPane = new FlowPane();
@@ -167,12 +164,12 @@ public class Exam {
         rightBox.setCenter(quesPane);
         rightBox.setBottom(rightBottomBar);
 
-        hBox = new HBox();
+        HBox hBox = new HBox();
         hBox.setMinSize(800, 600);
         hBox.setPrefSize(800, 600);
         hBox.getChildren().addAll(leftBox, rightBox);
 
-        scene = new Scene(hBox);
+        Scene scene = new Scene(hBox);
         scene.getStylesheets().add(getClass().getResource("skin.css").toExternalForm());   // 设定 css
 
         rightBox.minWidthProperty().bind(scene.widthProperty().subtract(leftBox.widthProperty()));
