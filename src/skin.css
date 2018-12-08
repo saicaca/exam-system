@@ -9,9 +9,7 @@
 #button:pressed {
     -fx-background-color: #606467;
 }
-#button:focused {
-    -fx-background-color: #4f5356;
-}
+
 #button-blue {
     -fx-background-color: #0288d1;
     -fx-background-radius: 0;
@@ -23,6 +21,7 @@
 #button-blue:pressed {
     -fx-background-color: #1e88e5;
 }
+
 #button-red {
     -fx-background-color: #ec407a;
     -fx-background-radius: 0;
@@ -34,6 +33,26 @@
 #button-red:pressed {
     -fx-background-color: #f48fb1;
 }
+
 #button:armed, #button:focused, #button-blue:armed, #button-blue:focused, #qtBt-correct:armed, #qtBt-correct:focused, #button-red:armed, #button-red:focused {
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+}
+
+#checkBox .box {
+    -fx-background-color: #E0E0E0;
+}
+#checkBox:selected .box {
+    -fx-background-color: #0288d1;
+}
+#checkBox:selected .mark {
+    -fx-background-color: #FFFFFF;
+}
+#radioBox .radio {
+    -fx-background-color: #E0E0E0;
+}
+#radioBox:selected .radio {
+    -fx-background-color: #0288d1;
+}
+#radioBox:selected .dot {
+    -fx-background-color: #FFFFFF;
 }

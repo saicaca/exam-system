@@ -79,7 +79,9 @@ public class Exam {
         Timer displayTimer = new Timer();
         displayTimer.schedule(timeDisplayTask, 0, 1000);
 
-
+        StackPane timerPane = new StackPane(lbTimer);
+        timerPane.setStyle("-fx-background-color: #3c4043");
+        timerPane.setMinHeight(60);
 
         // 显示考试基本信息
         Label lbTitle = new Label(title);
@@ -89,10 +91,12 @@ public class Exam {
         infoBox.setAlignment(Pos.CENTER);
         infoBox.setMinHeight(120);
         infoBox.getChildren().add(lbTitle);
-        infoBox.setStyle("-fx-background-color: #0288d1");
+        infoBox.setStyle("-fx-background-color: #3c4043");
+        // infoBox.setStyle("-fx-background-color: #0288d1");
 
         // 创建题目选择按钮
         FlowPane buttonPane = new FlowPane();
+        buttonPane.setPadding(new Insets(10,0,0,0));
         buttonPane.setMinWidth(5 * (qtButton.size+2));
         buttonPane.setMaxWidth(5 * (qtButton.size+2));
         buttonPane.setHgap(2);
@@ -153,16 +157,19 @@ public class Exam {
         quesPane = new QuesPane(questions.get(0));
 
         // 布局排版
-        VBox leftBox = new VBox(10);
-        leftBox.setAlignment(Pos.TOP_CENTER);
+        BorderPane leftBox = new BorderPane();
         leftBox.setStyle("-fx-background-color: #303030");
-        leftBox.getChildren().addAll(infoBox, buttonPane, lbTimer);
+        leftBox.setTop(infoBox);
+        leftBox.setCenter(buttonPane);
+        leftBox.setBottom(timerPane);
 
         rightBox = new BorderPane();
         rightBox.setCenter(quesPane);
         rightBox.setBottom(rightBottomBar);
 
         hBox = new HBox();
+        hBox.setMinSize(800, 600);
+        hBox.setPrefSize(800, 600);
         hBox.getChildren().addAll(leftBox, rightBox);
 
         scene = new Scene(hBox);
@@ -173,8 +180,6 @@ public class Exam {
         Stage stage = new Stage();
 
         stage.setScene(scene);
-        stage.setMinWidth(800);
-        stage.setMinHeight(600);
         stage.show();
     }
 
@@ -215,9 +220,12 @@ public class Exam {
     // 成绩面板
     class ResultPane extends VBox {
         ResultPane() {
+            setSpacing(10);
             setAlignment(Pos.CENTER);
             Label lbEnd = new Label("考试结束");
-            Label lbCorrect = new Label("" + correctCount);
+            lbEnd.setFont(Font.font("微软雅黑", FontWeight.BOLD, 30));
+            Label lbCorrect = new Label("答对题数：" + correctCount);
+            lbCorrect.setFont(Font.font("微软雅黑", FontWeight.BOLD, 30));
             getChildren().addAll(lbEnd, lbCorrect);
         }
     }
@@ -234,7 +242,7 @@ public class Exam {
             setStyle("-fx-background-color: #F5F5F5");
 
             // 显示题目文本
-            Label lbQuestion = new Label(question.getQues());
+            Label lbQuestion = new Label("Q" + (questions.indexOf(question) + 1) + "：" + question.getQues());
             lbQuestion.setFont(Font.font("微软雅黑",FontWeight.BOLD,24));
             lbQuestion.setWrapText(true);
             StackPane titlePane = new StackPane();
@@ -280,6 +288,7 @@ public class Exam {
                     for (int i = 0; i < selectionList.size(); i++) {
                         final int pos = i;
                         CheckBox cb = new CheckBox(selectionList.get(pos));
+                        cb.setId("checkBox");
                         cb.setFont(Font.font(20));
                         cb.setSelected(question.getAnswer()[pos]);    // 恢复选择状态
                         cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -299,6 +308,7 @@ public class Exam {
                         final int pos = i;
                         RadioButton rb = new RadioButton(selectionList.get(i));
                         rb.setToggleGroup(tg);
+                        rb.setId("radioBox");
                         rb.setFont(Font.font(20));
                         rb.setSelected(question.getAnswer()[i]);
                         rb.selectedProperty().addListener(new ChangeListener<Boolean>() {
