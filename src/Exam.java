@@ -33,6 +33,7 @@ public class Exam {
 
     private TimerTask timeDisplayTask;
     private int currentSecond;
+    private boolean isPaused;
 
     Stage stage;
 
@@ -59,30 +60,46 @@ public class Exam {
         }
 
 
-        // 倒计时
-        Label lbTimer = new Label();
-        lbTimer.setFont(Font.font("Arial", FontWeight.BOLD, 30));
-        lbTimer.setTextFill(Color.WHITE);
+        // 倒计时 & 暂停功能
+        Button btTimer = new Button();
+        btTimer.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+        btTimer.setId("button");
 
         currentSecond = totalSecond;
 
         timeDisplayTask = new TimerTask() {
             @Override
             public void run() {
-                currentSecond--;
-                Platform.runLater(() -> {
-                    if (currentSecond == 0)
-                        finish();
-                    lbTimer.setText(String.format("%02d:", currentSecond / 60) + String.format("%02d", currentSecond % 60));
-                });
+                if (!isPaused) {
+                    currentSecond--;
+                    Platform.runLater(() -> {
+                        if (currentSecond == 0)
+                            finish();
+                        btTimer.setText(String.format("%02d:", currentSecond / 60) + String.format("%02d", currentSecond % 60));
+                    });
+                }
             }
         };
         Timer displayTimer = new Timer();
         displayTimer.schedule(timeDisplayTask, 0, 1000);
 
-        StackPane timerPane = new StackPane(lbTimer);
-        timerPane.setStyle("-fx-background-color: #3c4043");
-        timerPane.setMinHeight(60);
+        btTimer.setMinSize(250, 60);
+
+        Label lbPause = new Label("考试暂停");
+        lbPause.setFont(Font.font("微软雅黑", FontWeight.BOLD, 24));
+        StackPane pausePane = new StackPane(lbPause);
+
+        btTimer.setOnAction(event -> {
+            if (isPaused) {
+                isPaused = false;
+                rightBox.setCenter(quesPane);
+            }
+            else {
+                isPaused = true;
+                rightBox.setCenter(pausePane);
+            }
+
+        });
 
         // 显示考试基本信息
         Label lbTitle = new Label(title);
@@ -161,7 +178,7 @@ public class Exam {
         leftBox.setStyle("-fx-background-color: #303030");
         leftBox.setTop(infoBox);
         leftBox.setCenter(buttonPane);
-        leftBox.setBottom(timerPane);
+        leftBox.setBottom(btTimer);
 
         rightBox = new BorderPane();
         rightBox.setCenter(quesPane);
@@ -268,7 +285,7 @@ public class Exam {
             selectionPane.setPadding(new Insets(20,20,20,20));
             ArrayList<String> selectionList = question.getSelection();
 
-            if (isFinished) {
+            if (isFinished) {   // 若考试已结束，只用 Label 显示选项
                 for (int i = 0; i < selectionList.size(); i++) {
                     Label lb;
                     if (answer[i] && key[i]) {
@@ -290,7 +307,7 @@ public class Exam {
                     selectionPane.getChildren().add(lb);
                 }
             }
-            else {
+            else {  // 若考试未结束，创建 CheckBox
                 if (question.isMultiple()) {
                     // 是多选题
                     for (int i = 0; i < selectionList.size(); i++) {
@@ -373,8 +390,10 @@ public class Exam {
             setMinSize(size,size);
             question = questions.get(num);
             setOnAction(event -> {
-                quesPane = new QuesPane(question);
-                rightBox.setCenter(quesPane);
+                if (!isPaused) {
+                    quesPane = new QuesPane(question);
+                    rightBox.setCenter(quesPane);
+                }
             });
             setFont(Font.font(16));
             setId("button");
