@@ -19,8 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Exam {
-    private int currentSecond;
-
+    private File file;
     private String title;
     private ArrayList<Question> questions = new ArrayList<>();
     private boolean isFinished;
@@ -33,9 +32,13 @@ public class Exam {
     private int correctCount;
 
     private TimerTask timeDisplayTask;
+    private int currentSecond;
+
+    Stage stage;
 
 
     public void start(File file) {
+        this.file = file;
         int totalSecond = 0;
 
         // 读取试题
@@ -43,8 +46,8 @@ public class Exam {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String[] info = reader.readLine().split("#");
-            title = info[0];
-            totalSecond = 60 * Integer.parseInt(info[1]);
+            title = info[0];    // 读入考试标题
+            totalSecond = 60 * Integer.parseInt(info[1]);   // 读入考试时间
 
             String quesStr;
             while ((quesStr = reader.readLine()) != null)
@@ -174,7 +177,7 @@ public class Exam {
 
         rightBox.minWidthProperty().bind(scene.widthProperty().subtract(leftBox.widthProperty()));
 
-        Stage stage = new Stage();
+        stage = new Stage();
 
         stage.setScene(scene);
         stage.show();
@@ -223,7 +226,15 @@ public class Exam {
             lbEnd.setFont(Font.font("微软雅黑", FontWeight.BOLD, 30));
             Label lbCorrect = new Label("答对题数：" + correctCount);
             lbCorrect.setFont(Font.font("微软雅黑", FontWeight.BOLD, 30));
-            getChildren().addAll(lbEnd, lbCorrect);
+            Button btRestart = new Button("重新开始");
+            btRestart.setId("button-blue");
+            btRestart.setMinSize(80, 60);
+            btRestart.setOnAction(event -> {
+                Exam newExam = new Exam();
+                newExam.start(file);
+                stage.close();
+            });
+            getChildren().addAll(lbEnd, lbCorrect, btRestart);
         }
     }
 
