@@ -90,6 +90,8 @@ public class Exam {
         StackPane pausePane = new StackPane(lbPause);
 
         btTimer.setOnAction(event -> {
+            if (isFinished)
+                return;
             if (isPaused) {
                 isPaused = false;
                 rightBox.setCenter(quesPane);
@@ -113,11 +115,18 @@ public class Exam {
 
         // 创建题目选择按钮
         FlowPane buttonPane = new FlowPane();
-        buttonPane.setPadding(new Insets(10,0,0,0));
         buttonPane.setMinWidth(5 * (qtButton.size+2));
         buttonPane.setMaxWidth(5 * (qtButton.size+2));
         buttonPane.setHgap(2);
         buttonPane.setVgap(3);
+        ScrollPane scrollPane = new ScrollPane(buttonPane);
+        scrollPane.setPadding(new Insets(10,0,10,0));
+        scrollPane.setPrefWidth(250);
+        buttonPane.setStyle("-fx-background-color: #303030");
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setStyle("-fx-background-color: #303030");
+
 
         btList = new qtButton[questions.size()];
         for (int i = 0; i < questions.size(); i++) {
@@ -177,7 +186,7 @@ public class Exam {
         BorderPane leftBox = new BorderPane();
         leftBox.setStyle("-fx-background-color: #303030");
         leftBox.setTop(infoBox);
-        leftBox.setCenter(buttonPane);
+        leftBox.setCenter(scrollPane);
         leftBox.setBottom(btTimer);
 
         rightBox = new BorderPane();
@@ -193,6 +202,7 @@ public class Exam {
         scene.getStylesheets().add(getClass().getResource("skin.css").toExternalForm());   // 设定 css
 
         rightBox.minWidthProperty().bind(scene.widthProperty().subtract(leftBox.widthProperty()));
+        buttonPane.minHeightProperty().bind(scene.heightProperty());    //
 
         stage = new Stage();
 
@@ -387,7 +397,9 @@ public class Exam {
 
         qtButton(int num) {
             setText(""+(num+1));
-            setMinSize(size,size);
+            setMinSize(size, size);
+            setMaxSize(size, size);
+            setPadding(new Insets(0,0,0,0));
             question = questions.get(num);
             setOnAction(event -> {
                 if (!isPaused) {

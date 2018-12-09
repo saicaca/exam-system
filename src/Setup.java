@@ -17,7 +17,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-public class SetupInterface extends Application {
+public class Setup extends Application {
     private File selectedFile;
     private VBox rightBox = new VBox(10);
     private Label lbTitle = new Label("标题：");
