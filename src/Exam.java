@@ -31,7 +31,7 @@ public class Exam {
     private ResultPane resultPane;
     private int correctCount;
 
-    private TimerTask timeDisplayTask;
+    private TimerTask timerTask;
     private int currentSecond;
     private boolean isPaused;
 
@@ -53,21 +53,31 @@ public class Exam {
             String quesStr;
             while ((quesStr = reader.readLine()) != null)
                 questions.add(new Question(quesStr));
-            Collections.shuffle(questions);
+            Collections.shuffle(questions);     // 随机打乱试题
         }
         catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
 
+        // 显示考试名称
+        Label lbTitle = new Label(title);
+        lbTitle.setTextFill(Color.WHITE);
+        lbTitle.setFont(Font.font("微软雅黑", FontWeight.BOLD, 24));
+        VBox infoBox = new VBox(4);
+        infoBox.setAlignment(Pos.CENTER);
+        infoBox.setMinHeight(120);
+        infoBox.getChildren().add(lbTitle);
+        infoBox.setStyle("-fx-background-color: #3c4043");
 
         // 倒计时 & 暂停功能
         Button btTimer = new Button();
+        btTimer.setMinSize(250, 60);
         btTimer.setFont(Font.font("Arial", FontWeight.BOLD, 30));
         btTimer.setId("button");
 
         currentSecond = totalSecond;
 
-        timeDisplayTask = new TimerTask() {
+        timerTask = new TimerTask() {
             @Override
             public void run() {
                 if (!isPaused) {
@@ -80,11 +90,10 @@ public class Exam {
                 }
             }
         };
-        Timer displayTimer = new Timer();
-        displayTimer.schedule(timeDisplayTask, 0, 1000);
+        Timer timer = new Timer();
+        timer.schedule(timerTask, 0, 1000);
 
-        btTimer.setMinSize(250, 60);
-
+        // 创建暂停面板
         Label lbPause = new Label("考试暂停");
         lbPause.setFont(Font.font("微软雅黑", FontWeight.BOLD, 24));
         StackPane pausePane = new StackPane(lbPause);
@@ -100,21 +109,11 @@ public class Exam {
                 isPaused = true;
                 rightBox.setCenter(pausePane);
             }
-
         });
-
-        // 显示考试基本信息
-        Label lbTitle = new Label(title);
-        lbTitle.setTextFill(Color.WHITE);
-        lbTitle.setFont(Font.font("微软雅黑", FontWeight.BOLD, 24));
-        VBox infoBox = new VBox(4);
-        infoBox.setAlignment(Pos.CENTER);
-        infoBox.setMinHeight(120);
-        infoBox.getChildren().add(lbTitle);
-        infoBox.setStyle("-fx-background-color: #3c4043");
 
         // 创建题目选择按钮
         FlowPane buttonPane = new FlowPane();
+        buttonPane.setStyle("-fx-background-color: #303030");
         buttonPane.setMinWidth(5 * (qtButton.size+2));
         buttonPane.setMaxWidth(5 * (qtButton.size+2));
         buttonPane.setHgap(2);
@@ -122,11 +121,9 @@ public class Exam {
         ScrollPane scrollPane = new ScrollPane(buttonPane);
         scrollPane.setPadding(new Insets(10,0,10,0));
         scrollPane.setPrefWidth(250);
-        buttonPane.setStyle("-fx-background-color: #303030");
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background-color: #303030");
-
 
         btList = new qtButton[questions.size()];
         for (int i = 0; i < questions.size(); i++) {
@@ -135,13 +132,13 @@ public class Exam {
             buttonPane.getChildren().add(button);
         }
 
-        // 提交按钮
-        btFinish = new Button("提交");
-        btFinish.setMinSize(100, 60);
-        btFinish.setFont(Font.font(16));
+        // 交卷按钮
+        btFinish = new Button("交卷");
+        btFinish.setMinSize(120, 60);
+        btFinish.setFont(Font.font("微软雅黑", FontWeight.BOLD, 20));
         btFinish.setId("button-blue");
 
-        // 提交前弹出确认窗口
+        // 交卷前弹出确认窗口
         btFinish.setOnAction(event -> {
             Stage finStage = new Stage();
 
@@ -207,16 +204,20 @@ public class Exam {
         stage = new Stage();
 
         stage.setScene(scene);
+        stage.setTitle(title);
         stage.show();
     }
 
 
     // 结束考试
     private void finish() {
+        if (isFinished)
+            return; //防止重复交卷
+
         isFinished = true;
         correctCount = 0;
 
-        timeDisplayTask.cancel();
+        timerTask.cancel();
 
         for (Question question: questions) {
             if (question.isCorrect())
@@ -235,6 +236,7 @@ public class Exam {
     }
 
 
+    // 是否已完成答题
     private boolean isComplete() {
         for (Question question: questions) {
             if (question.isEmpty())
@@ -254,14 +256,26 @@ public class Exam {
             Label lbCorrect = new Label("答对题数：" + correctCount);
             lbCorrect.setFont(Font.font("微软雅黑", FontWeight.BOLD, 30));
             Button btRestart = new Button("重新开始");
-            btRestart.setId("button-blue");
-            btRestart.setMinSize(80, 60);
             btRestart.setOnAction(event -> {
                 Exam newExam = new Exam();
                 newExam.start(file);
                 stage.close();
             });
-            getChildren().addAll(lbEnd, lbCorrect, btRestart);
+            Button btBack = new Button("选择考试");
+            btBack.setOnAction(event -> {
+                Setup setup = new Setup();
+                setup.start(new Stage());
+                stage.close();
+            });
+            for (Button button: new Button[]{btRestart, btBack}) {
+                button.setMinSize(100, 50);
+                button.setFont(Font.font(16));
+                button.setId("button-blue");
+            }
+            HBox btBox = new HBox(10);
+            btBox.setAlignment(Pos.CENTER);
+            btBox.getChildren().addAll(btRestart, btBack);
+            getChildren().addAll(lbEnd, lbCorrect, btBox);
         }
     }
 
@@ -399,7 +413,7 @@ public class Exam {
             setText(""+(num+1));
             setMinSize(size, size);
             setMaxSize(size, size);
-            setPadding(new Insets(0,0,0,0));
+            setPadding(new Insets(0,0,0,0));    // 防止题目编号大于100时被显示成省略号
             question = questions.get(num);
             setOnAction(event -> {
                 if (!isPaused) {
@@ -412,6 +426,7 @@ public class Exam {
         }
 
         public void refresh() {
+            // 设定 css
             if (isFinished && question.isCorrect())
                 setId("button-blue");
             else if (isFinished && !question.isCorrect())

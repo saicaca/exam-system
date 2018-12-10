@@ -12,7 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -27,12 +26,13 @@ public class Setup extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        File[] examList = new File("exams/").listFiles();
+        // 读取文件列表
+        File[] fileList = new File("exams/").listFiles();
         ObservableList<File> data = FXCollections.observableArrayList();
+        data.addAll(fileList);
+
+        // 创建 ListView
         ListView<File> listView = new ListView<>(data);
-
-        data.addAll(examList);
-
         listView.setItems(data);
         listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<File>() {
             @Override
@@ -42,10 +42,12 @@ public class Setup extends Application {
             }
         });
 
+        // 信息格式设定
         for (Label label: new Label[]{lbTitle, lbTime, lbNum}) {
             label.setFont(Font.font(16));
         }
 
+        // 开始按钮
         Button btStart = new Button("开始考试");
         btStart.setMinSize(80,40);
         btStart.setOnAction(event -> {
@@ -54,16 +56,18 @@ public class Setup extends Application {
             primaryStage.close();
         });
 
+        // 布局排版
         rightBox.getChildren().addAll(lbTitle, lbTime, lbNum, btStart);
-
         HBox hBox = new HBox(10);
         hBox.setPadding(new Insets(10,10,10,10));
         hBox.getChildren().addAll(listView, rightBox);
         Scene scene = new Scene(hBox, 600, 400);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("选择考试");
         primaryStage.show();
     }
 
+    // 读取考试信息
     private void setInfo(File file) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
